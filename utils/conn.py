@@ -193,7 +193,8 @@ def get_gcs_storage_options():
     try:
         if st.secrets and "gcp_service_account" in st.secrets:
             logger.info("Streamlit Secrets에서 GCP 서비스 계정 정보를 로드합니다.")
-            return {"token": dict(st.secrets["gcp_service_account"])}
+            service_account_info = dict(st.secrets["gcp_service_account"])
+            return {"token": service_account_info, "project": service_account_info.get("project_id")}
     except Exception:
         pass
 
