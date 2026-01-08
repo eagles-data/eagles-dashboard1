@@ -1,0 +1,17 @@
+kdvenv/
+.venv/
+venv/
+**/kdvenv/**
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+.git/
+.streamlit/
+.cred/
+*.json
+*.toml
+*.log
+public/
+.firebaserc
+.firebase/
