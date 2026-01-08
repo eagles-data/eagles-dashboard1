@@ -27,14 +27,12 @@ def movement_plot(df,
                   futures=False,
                   ax=None,
                   freq_th=0.05,
-                  instant=False,
                   eng=False,
-                  show_batter_img=False,
-                  draw_dots=False, sample_dots=False,
+                  draw_dots=False,
+                  sample_dots=False,
                   draw_usage=False,
                   draw_lg_avg=False,
-                  lg_avg_df=None,
-                  show_PTS=False):
+                  lg_avg_df=None):
     """
     무브먼트 플롯을 그린다.
 
@@ -57,17 +55,8 @@ def movement_plot(df,
         freq_th: 최소 구사율. 데이터프레임에서 TaggedPitchType의 비중이 해당 값 이상인 구종만 그림.
                  기본값 0.05(5%)
 
-        # HITS 구현 X
-        instant: True면 미리 지정된 전역변수 instant_year('올해' 값을 지정함. ex: 2025) 기준으로,
-                 '올해'에 해당하는 데이터만 그림.
-                 기본값 False
-
         eng: True면 영어로, False면 한글로 그림. cm/inch 변환도 함.
              기본값 False
-
-        # HITS 구현 X
-        show_batter_img: True면 타자 이미지 그림을 그리고 False면 안 그림.
-                         기본값 False
 
         draw_dots: True면 개별 투구를 scatter chart로 뿌리고, False면 범위를 그림.
                    기본값 False
@@ -90,8 +79,6 @@ def movement_plot(df,
                    hb_median, hb_std, ivb_median, ivb_std,
                    ext_median, ext_std, relh_mean, relh_std
                    기본값 None
-
-        show_PTS: True면 PTS 무브먼트를 보여줌 (트랙맨이 없을 때만)
 
     Returns:
         a: 플롯이 그려진 matplotlib.axes.Axes 객체
@@ -120,34 +107,12 @@ def movement_plot(df,
     if futures == False:
         target = target.loc[target.Level.isin(['KBO', 'Exhibition'])]
 
-    # '올해'만 그릴지
-    if instant == True:
-        target = target[target.year == instant_year]
-
     # 필터링한 데이터 0 -> Return
     if target.shape[0] == 0:
         return
 
     # 무브먼트를 그릴 것이기 때문에
     # 필요한 Feature (구속, 무브먼트, 구종) 없는 데이터는 걸러낸다.
-    if show_PTS is True:
-        if 'InducedVertBreakGameDay' in target.columns:
-            # 코드 작성 편의성을 위해 GameDay 컬럼 -> 전부 떼고 수정
-            target = target.assign(RelSpeed = np.where(target.RelSpeed.notnull(),
-                                                       target.RelSpeed,
-                                                       target.RelSpeedGameDay),
-                                   HorzBreak = np.where(target.HorzBreak.notnull(),
-                                                        target.HorzBreak,
-                                                        target.HorzBreakGameDay),
-                                   InducedVertBreak = np.where(target.InducedVertBreak.notnull(),
-                                                               target.InducedVertBreak,
-                                                               target.InducedVertBreakGameDay),
-                                   PlateLocSide = np.where(target.PlateLocSide.notnull(),
-                                                           target.PlateLocSide,
-                                                           target.PlateLocSideGameDay),
-                                   PlateLocHeight = np.where(target.PlateLocHeight.notnull(),
-                                                             target.PlateLocHeight,
-                                                             target.PlateLocHeightGameDay),)
     target = target[target.RelSpeed != 0]
     target = target[target.RelSpeed.notnull() & target.HorzBreak.notnull() & target.TaggedPitchType.notnull()]
 
@@ -361,31 +326,6 @@ def movement_plot(df,
         a.set_yticks(list(range(-80, 80, 20))[1:])
         a.hlines(0, -100, 100, color='k', ls='--', lw=1.5, zorder=0)
         a.vlines(0, -100, 100, color='k', ls='--', lw=1.5, zorder=0)
-
-    if show_batter_img:
-        # 타자 이미지 그리기
-        try:
-            RHB_img = mpimg.imread('../images/RHB_image_colordot.png')
-            LHB_img = mpimg.imread('../images/LHB_image_colordot.png')
-        except:
-            RHB_img = mpimg.imread('images/RHB_image_colordot.png')
-            LHB_img = mpimg.imread('images/LHB_image_colordot.png')
-        RHB_imagebox = OffsetImage(RHB_img, zoom=.25, alpha=.55)
-
-        if eng == True:
-            RHB_ab = AnnotationBbox(RHB_imagebox, (54 / 2.54, 0), frameon=False)
-        else:
-            RHB_ab = AnnotationBbox(RHB_imagebox, (54, 0), frameon=False)
-        RHB_artist = a.add_artist(RHB_ab)
-        RHB_artist.set_zorder(3)
-
-        LHB_imagebox = OffsetImage(LHB_img, zoom=.25, alpha=.55)
-        if eng == True:
-            LHB_ab = AnnotationBbox(LHB_imagebox, (-54 / 2.54, 0), frameon=False)
-        else:
-            LHB_ab = AnnotationBbox(LHB_imagebox, (-54, 0), frameon=False)
-        LHB_artist = a.add_artist(LHB_ab)
-        LHB_artist.set_zorder(3)
 
     # Legend 표시 - 오프셋 설정
     bbox_anchor_y = -0.35
@@ -752,8 +692,7 @@ def 로케이션그리기(df,
                    분포표시: bool=False,
                    마커쓰기: bool=False,
                    ax=None,
-                   dpi=100,
-                   PTS로_그림=False):
+                   dpi=100):
     if ax is None:
         fig, ax = plt.subplots(figsize=(3, 3), dpi=dpi)
     else:
@@ -808,15 +747,7 @@ def 로케이션그리기(df,
 
         if 구종 in 대상구종들:
             타겟 = 대상[대상.TaggedPitchType == 구종]
-            if PTS로_그림 is False:
-                유효타겟 = 타겟[타겟.PlateLocSide.notnull() & 타겟.PlateLocHeight.notnull()]
-            else:
-                유효타겟 = 타겟.assign(PlateLocSide = np.where(타겟.PlateLocSide.notnull(),
-                                                               타겟.PlateLocSide,
-                                                               타겟.PlateLocSideGameDay),
-                                       PlateLocHeight = np.where(타겟.PlateLocHeight.notnull(),
-                                                                 타겟.PlateLocHeight,
-                                                                 타겟.PlateLocHeightGameDay))
+            유효타겟 = 타겟[타겟.PlateLocSide.notnull() & 타겟.PlateLocHeight.notnull()]
             구종별_라벨.append(ax.scatter(-1000, -1000,
                                           s=100, zorder=0, c=색상))
             라벨.append(구종영문_한글로변환[구종])

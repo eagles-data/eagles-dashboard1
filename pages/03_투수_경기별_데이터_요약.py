@@ -1153,10 +1153,6 @@ if 선택한투수ID:
 
             if ((퓨처스임 is False) &
                 (len(시즌전체데이터[시즌전체데이터.Level == 'KBO']) > 0)) or (퓨처스임 is True):
-                if 시즌전체데이터.InducedVertBreak.isnull().all():
-                    PTS로_그림_시즌전체 = True
-                else:
-                    PTS로_그림_시즌전체 = False
                 ax1 = movement_plot(시즌전체데이터,
                                     futures=퓨처스임,
                                     draw_dots=_개별투구표시1,
@@ -1166,8 +1162,7 @@ if 선택한투수ID:
                                     lg_avg_df=리그평균,
                                     freq_th=0,
                                     eng=(한글영문 == '영어'),
-                                    ax=ax1,
-                                    show_PTS = PTS로_그림_시즌전체)
+                                    ax=ax1)
 
                 if ax1 is not None:
                     if isinstance(ax1, mpl.axes.Axes):
@@ -1211,20 +1206,6 @@ if 선택한투수ID:
         elif len(그날데이터) > 0:
             fig2, ax2 = plt.subplots(figsize=(5, 5), dpi=dpi)
 
-            if 그날데이터.InducedVertBreak.isnull().all():
-                PTS로_그림 = True
-                그날데이터 = 그날데이터.assign(RelSpeed = np.where(그날데이터.RelSpeed.notnull(),
-                                                                   그날데이터.RelSpeed,
-                                                                   그날데이터.RelSpeedGameDay),
-                                               InducedVertBreak = np.where(그날데이터.InducedVertBreak.notnull(),
-                                                                           그날데이터.InducedVertBreak,
-                                                                           그날데이터.InducedVertBreakGameDay),
-                                               HorzBreak = np.where(그날데이터.HorzBreak.notnull(),
-                                                                    그날데이터.HorzBreak,
-                                                                    그날데이터.HorzBreakGameDay))
-            else:
-                PTS로_그림 = False
-
             ax2 = movement_plot(그날데이터,
                                 futures=퓨처스임,
                                 draw_dots=_개별투구표시2,
@@ -1234,8 +1215,7 @@ if 선택한투수ID:
                                 lg_avg_df=리그평균,
                                 freq_th=0,
                                 eng=(한글영문 == '영어'),
-                                ax=ax2,
-                                show_PTS=PTS로_그림)
+                                ax=ax2)
 
             if ax2 is not None:
                 if isinstance(ax2, mpl.axes.Axes):
@@ -1253,7 +1233,7 @@ if 선택한투수ID:
                 st.markdown(f"**vs 좌타 {len(그날데이터[그날데이터.BatterSide == 'Left'])}구**")
             else:
                 st.markdown(f"**vs LHH {len(그날데이터[그날데이터.BatterSide == 'Left'])} Pitches**")
-            좌타상대_로케이션 = 로케이션그리기(그날데이터, '좌', _분포표시, _구종별마커표시, PTS로_그림=PTS로_그림)
+            좌타상대_로케이션 = 로케이션그리기(그날데이터, '좌', _분포표시, _구종별마커표시)
             if 한글영문 == '한글':
                 타이틀3 = f'{선택한투수이름} vs 좌타자'
             else:
@@ -1288,7 +1268,7 @@ if 선택한투수ID:
                 st.markdown(f"**vs 우타 {len(그날데이터[그날데이터.BatterSide == 'Right'])}구**")
             else:
                 st.markdown(f"**vs RHH {len(그날데이터[그날데이터.BatterSide == 'Right'])} Pitches**")
-            우타상대_로케이션 = 로케이션그리기(그날데이터, '우', _분포표시, _구종별마커표시, PTS로_그림=PTS로_그림)
+            우타상대_로케이션 = 로케이션그리기(그날데이터, '우', _분포표시, _구종별마커표시)
             if 한글영문 == '한글':
                 타이틀4 = f'{선택한투수이름} vs 우타자'
             else:
@@ -1709,12 +1689,12 @@ with st.expander('그림 한장으로 보기'):
     # ---- 2) 예시: 가운데 4개 차트
     if len(그날데이터) > 0:
         if 좌타상대_로케이션 is not None:
-            fA = 로케이션그리기(그날데이터, '좌', _분포표시, _구종별마커표시, ax=ax_ch1, dpi=200, PTS로_그림=PTS로_그림)
+            fA = 로케이션그리기(그날데이터, '좌', _분포표시, _구종별마커표시, ax=ax_ch1, dpi=200)
             좌타타이틀 = f"vs 좌타자 {len(그날데이터[그날데이터.BatterSide == 'Left'])}구" if 한글영문 == '한글' \
                          else f"vs LHH {len(그날데이터[그날데이터.BatterSide == 'Left'])} Pitches"
             ax_ch1.set_title(좌타타이틀, fontsize=20)
         if 우타상대_로케이션 is not None:
-            fA = 로케이션그리기(그날데이터, '우', _분포표시, _구종별마커표시, ax=ax_ch4, dpi=200, PTS로_그림=PTS로_그림)
+            fA = 로케이션그리기(그날데이터, '우', _분포표시, _구종별마커표시, ax=ax_ch4, dpi=200)
             우타타이틀 = f"vs 우타자 {len(그날데이터[그날데이터.BatterSide == 'Right'])}구" if 한글영문 == '한글' \
                          else f"vs RHH {len(그날데이터[그날데이터.BatterSide == 'Right'])} Pitches"
             ax_ch4.set_title(우타타이틀, fontsize=20)
@@ -1728,8 +1708,7 @@ with st.expander('그림 한장으로 보기'):
                           lg_avg_df=리그평균,
                           freq_th=0,
                           eng=(한글영문 == '영어'),
-                          ax=ax_ch3,
-                          show_PTS=PTS로_그림)
+                          ax=ax_ch3)
         if _ is not None:
             if isinstance(ax_ch3, mpl.axes.Axes):
                 if 한글영문 == '한글':
@@ -1766,8 +1745,7 @@ with st.expander('그림 한장으로 보기'):
                           lg_avg_df=리그평균,
                           freq_th=0,
                           eng=(한글영문 == '영어'),
-                          ax=ax_ch2,
-                          show_PTS=PTS로_그림_시즌전체)
+                          ax=ax_ch2)
         if _ is not None:
             if isinstance(ax_ch2, mpl.axes.Axes):
                 if 선택한연도 != '전체':
