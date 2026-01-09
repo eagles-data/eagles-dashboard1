@@ -280,6 +280,7 @@ with 타자탭:
     else:
         df = 타자_퓨처스
 
+
     if 시즌선택 != '전체':
         df = df[(df.연도 == 시즌선택) &
                 (df.나이.between(타자나이범위[0], 타자나이범위[1]))]
@@ -316,11 +317,13 @@ with 타자탭:
                 df['팀'] = df['시즌소속팀'].apply(get_base64_emblem)
             
             display_df = df[['이름', '팀'] + 타자리더보드_표시컬럼]
+            dynamic_height = min(len(df) * 35 + 38, 800)
             st.dataframe(display_df\
                          .set_index(['이름', '팀'])\
                          .sort_values('타석', ascending=False),
                          hide_index=False,
                          width='content',
+                         height=dynamic_height,
                          column_config={
                              "팀": st.column_config.ImageColumn(label="팀", width="small"),
                              **타자컬럼포맷설정
@@ -430,11 +433,13 @@ with 투수탭:
                 df['팀'] = df['시즌소속팀'].apply(get_base64_emblem)
             
             display_df = df[['이름', '팀'] + 투수리더보드_표시컬럼]
+            dynamic_height = min(len(df) * 35 + 38, 800)
             st.dataframe(display_df\
                          .set_index(['이름', '팀'])\
                          .sort_values('이닝', ascending=False),
                          hide_index=False,
                          width='content',
+                         height=dynamic_height,
                          column_config={
                              "팀": st.column_config.ImageColumn(label="팀", width="small"),
                              **투수컬럼포맷설정

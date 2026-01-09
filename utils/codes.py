@@ -43,9 +43,10 @@ class EVLABBClass(IntEnum):
     BR = 0
     LD = 1
     FB = 2
-    GB = 3
-    PU = 4
-    UC = 5
+    PFB = 3 # Poor FB
+    GB = 4
+    PU = 5
+    UC = 6
 
 
 pitchtype_sortlist = ['Fastball', 'Sinker', 'Slider', 'Cutter', 'Curveball', 'Sweeper',
@@ -344,7 +345,7 @@ ball_colors = {
     'gb_per_fb': '땅/뜬',
     'hardhit_rate': '강한타구%',
     'barrel_rate': '배럴%',
-    'flareburner_rate': '안타성타구%',
+    'flareburner_rate': '단타성타구%',
     'pitches': '투구수',
 }
 
@@ -370,7 +371,7 @@ ball_colors = {
     'hr_rate': 'HR%',
     'hardhit_rate': '강한타구%',
     'barrel_rate': '배럴%',
-    'flareburner_rate': '안타성타구%',
+    'flareburner_rate': '단타성타구%',
     'zswing_rate': '존스윙%',
     'zcon_rate': '존컨택%',
     'chase_rate': '체이스%',
@@ -380,6 +381,7 @@ ball_colors = {
     'gb_rate': '땅볼%',
     'ld_rate': '라인%',
     'fb_rate': '뜬공%',
+    'pfb_rate': '약한뜬공%',
     'pu_rate': '팝업%',
     'pull_rate': '당긴%',
     'center_rate': '가운데%',
@@ -424,7 +426,7 @@ ball_colors = {
      "땅/뜬": st.column_config.NumberColumn(format='%.2f'),
      "강한타구%": st.column_config.NumberColumn(format='%.1f', help='인플레이 타구 중 타구속도 153km/h 이상인 강한 타구의 비율'),
      "배럴%": st.column_config.NumberColumn(format='%.1f', help='배럴타구 비율; 배럴타구는 타구속도&발사각 기준 기대타율 5할 이상, 기대장타율 1.500 이상인 타구'),
-     "안타성타구%": st.column_config.NumberColumn(format='%.1f', help='배럴은 아니지만 기대타율 5할 이상인 타구; 외야 앞에 떨어지는 라인드라이브/텍사스 안타, 강하지만 각도가 낮은 땅볼/라이너 타구 등이 해당함'),
+     "단타성타구%": st.column_config.NumberColumn(format='%.1f', help='기대타율은 높지만 단타 가능성이 높은 타구'),
      "CSW%": st.column_config.NumberColumn(format='%.1f', help='전체 투구 중 헛스윙과 루킹스트라이크 비율'),
      "헛스윙%": st.column_config.NumberColumn(format='%.1f', help='스윙이 나왔을 때 헛스윙이 된 비율'),
      "존컨택%": st.column_config.NumberColumn(format='%.1f', help='S존 안에 투구했을 때 컨택된 비율'),
@@ -448,10 +450,11 @@ ball_colors = {
      "땅볼%": st.column_config.NumberColumn(format='%.1f'),
      "라인%": st.column_config.NumberColumn(format='%.1f'),
      "뜬공%": st.column_config.NumberColumn(format='%.1f'),
+     "약한뜬공%": st.column_config.NumberColumn(format='%.1f'),
      "팝업%": st.column_config.NumberColumn(format='%.1f'),
      "강한타구%": st.column_config.NumberColumn(format='%.1f', help='인플레이 타구 중 타구속도 153km/h 이상인 강한 타구의 비율'),
      "배럴%": st.column_config.NumberColumn(format='%.1f', help='배럴타구 비율; 배럴타구는 타구속도&발사각 기준 기대타율 5할 이상, 기대장타율 1.500 이상인 타구'),
-     "안타성타구%": st.column_config.NumberColumn(format='%.1f', help='배럴은 아니지만 기대타율 5할 이상인 타구; 외야 앞에 떨어지는 라인드라이브/텍사스 안타, 강하지만 각도가 낮은 땅볼/라이너 타구 등이 해당함'),
+     "단타성타구%": st.column_config.NumberColumn(format='%.1f', help='기대타율은 높지만 단타 가능성이 높은 타구'),
      "존스윙%": st.column_config.NumberColumn(format='%.1f', help='S존 안에 들어온 공에 스윙한 비율'),
      "존컨택%": st.column_config.NumberColumn(format='%.1f', help='S존 안 공에 스윙했을 때 컨택트에 성공한 비율'),
      "체이스%": st.column_config.NumberColumn(format='%.1f', help='S존 바깥의 공에 스윙이 나간 비율'),
@@ -469,21 +472,6 @@ ball_colors = {
      "평균 발사각도": st.column_config.NumberColumn(format='%.1f', help='선수 개인의 인플레이 타구 발사각도 평균값'),
  }
 
-타자리더보드_표시컬럼 = [
-    '나이',
-    '타석', '홈런', '타율', '출루율', '장타율', 'OPS',
-    'BB%', 'K%', 'HR%', 'BABIP',
-    '기대타율', '기대출루율', '기대장타율', '기대OPS',
-    'wOBA', '기대wOBA', '체이스%', '존컨택%', '존스윙%', '스윙%', '컨택%',
-    'PD+EV', 'T-10',
-    '강한타구%', '배럴%','PullAir%', '안타성타구%',
-    '당긴%', '가운데%', '밀어친%',
-    '땅볼%', '라인%', '뜬공%', '팝업%',
-    '최대 타구속도', '평균 타구속도', '평균 발사각도',
-    '인플레이 타구수', '강한 타구수',
-    # 타수, 아웃컨%
-]
-
 투수리더보드_표시컬럼 = [
     '나이',
     '이닝', 'WHIP', '타자', '피안타', '탈삼진', '볼넷', '홈런',
@@ -493,7 +481,22 @@ ball_colors = {
     '피안타율', '피출루율', '피장타율', '피OPS', 'BABIP',
     '기대피안타율', '기대피출루율', '기대피장타율', '기대피OPS',
     '땅볼%', '라인%', '뜬공%', '팝업%', '땅/뜬',
-    '강한타구%', '배럴%', '안타성타구%', '투구수',
+    '강한타구%', '배럴%', '단타성타구%', '투구수',
+]
+
+타자리더보드_표시컬럼 = [
+    '나이',
+    '타석', '홈런', '타율', '출루율', '장타율', 'OPS',
+    'BB%', 'K%', 'HR%', 'BABIP',
+    '기대타율', '기대출루율', '기대장타율', '기대OPS',
+    'wOBA', '기대wOBA', '체이스%', '존컨택%', '존스윙%', '스윙%', '컨택%',
+    'PD+EV', 'T-10',
+    '강한타구%', '배럴%','PullAir%', '단타성타구%',
+    '당긴%', '가운데%', '밀어친%',
+    '땅볼%', '라인%', '뜬공%', '약한뜬공%', '팝업%',
+    '최대 타구속도', '평균 타구속도', '평균 발사각도',
+    '인플레이 타구수', '강한 타구수',
+    # 타수, 아웃컨%
 ]
 
 p_kor_dict = {

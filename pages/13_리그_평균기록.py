@@ -28,7 +28,7 @@ engine = get_conn()
     'hr_rate': '홈런%',
     'hardhit_rate': '강한타구%',
     'barrel_rate': '배럴%',
-    'flareburner_rate': '안타성타구%',
+    'flareburner_rate': '단타성타구%',
     'zswing_rate': '존스윙%',
     'zcon_rate': '존컨택%',
     'chase_rate': '체이스%',
@@ -51,7 +51,7 @@ engine = get_conn()
 타자필요컬럼 = [
     '타율', '출루율', '장타율', 'OPS', 'BABIP', 'wOBA',
     '볼넷%', '삼진%', '홈런%',
-    '강한타구%', '배럴%', '안타성타구%', 'PullAir%',
+    '강한타구%', '배럴%', '단타성타구%', 'PullAir%',
     '최고 타구속도', '평균 타구속도', '평균 발사각도',
     '존스윙%', '체이스%', '스윙%', '존컨택%', '아웃존컨택%', '컨택%',
     '땅볼%', '라인%', '뜬공%', '팝업%', '당긴%', '가운데%', '밀어친%',
@@ -82,7 +82,7 @@ engine = get_conn()
     'BABIP': 'BABIP',
     'hardhit_rate': '강한타구%',
     'barrel_rate': '배럴%',
-    'flareburner_rate': '안타성타구%',
+    'flareburner_rate': '단타성타구%',
     'zcon_rate': '존컨택%',
     'chase_rate': '체이스%',
     'gb_rate': '땅볼%',
@@ -97,7 +97,7 @@ engine = get_conn()
     'WHIP', '삼진%', '볼넷%', 'K-BB%', '홈런%', '삼진/9', '볼넷/9', '홈런/9',
     'CSW%', '헛스윙%', '존%', '스트%', 
     '피안타율', '피출루율', '피장타율', '피OPS', 'BABIP',
-    '강한타구%', '배럴%', '안타성타구%',
+    '강한타구%', '배럴%', '단타성타구%',
     '존컨택%', '체이스%',
     '땅볼%', '라인%', '뜬공%', '팝업%', '땅/뜬', '투구수',
 ]
@@ -279,7 +279,7 @@ with tab1:
                          "배럴%": st.column_config.NumberColumn(
                              format='%.1f'
                          ),
-                         "안타성타구%": st.column_config.NumberColumn(
+                         "단타성타구%": st.column_config.NumberColumn(
                              format='%.1f'
                          ),
                          "존스윙%": st.column_config.NumberColumn(
@@ -417,7 +417,7 @@ with tab2:
                          "배럴%": st.column_config.NumberColumn(
                              format='%.1f'
                          ),
-                         "안타성타구%": st.column_config.NumberColumn(
+                         "단타성타구%": st.column_config.NumberColumn(
                              format='%.1f'
                          ),
                          "CSW%": st.column_config.NumberColumn(
