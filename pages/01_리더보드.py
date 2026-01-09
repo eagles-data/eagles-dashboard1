@@ -310,15 +310,22 @@ with 타자탭:
         try:
             if 현소속or원소속 == '현재':
                 df = df[df.현소속팀.isin(팀선택)]
-                df = df.rename(columns={'현소속팀':'팀'}).set_index(['이름', '팀'])
+                df['팀'] = df['현소속팀'].apply(get_base64_emblem)
             elif 현소속or원소속 == '원소속':
                 df = df[df.원소속팀.isin(팀선택)]
-                df = df.rename(columns={'원소속팀':'팀'}).set_index(['이름', '팀'])
+                df['팀'] = df['원소속팀'].apply(get_base64_emblem)
             else:
                 df = df[df.시즌소속팀.isin(팀선택)]
-                df = df.rename(columns={'시즌소속팀':'팀'}).set_index(['이름', '팀'])
-            st.dataframe(df[타자리더보드_표시컬럼].sort_values('타석', ascending=False),
-                         column_config = 타자컬럼포맷설정)
+                df['팀'] = df['시즌소속팀'].apply(get_base64_emblem)
+            
+            display_df = df[['이름', '팀'] + 타자리더보드_표시컬럼].sort_values('타석', ascending=False)
+            st.dataframe(display_df,
+                         hide_index=True,
+                         use_container_width=True,
+                         column_config={
+                             "팀": st.column_config.ImageColumn(label="팀", width="small"),
+                             **타자컬럼포맷설정
+                         })
 
         except KeyError as e:
             st.markdown('데이터 없음')
@@ -415,15 +422,22 @@ with 투수탭:
         try:
             if 현소속or원소속 == '현재':
                 df = df[df.현소속팀.isin(팀선택)]
-                df = df.rename(columns={'현소속팀':'팀'}).set_index(['이름', '팀'])
+                df['팀'] = df['현소속팀'].apply(get_base64_emblem)
             elif 현소속or원소속 == '원소속':
                 df = df[df.원소속팀.isin(팀선택)]
-                df = df.rename(columns={'원소속팀':'팀'}).set_index(['이름', '팀'])
+                df['팀'] = df['원소속팀'].apply(get_base64_emblem)
             else:
                 df = df[df.시즌소속팀.isin(팀선택)]
-                df = df.rename(columns={'시즌소속팀':'팀'}).set_index(['이름', '팀'])
-            st.dataframe(df[투수리더보드_표시컬럼].sort_values('이닝', ascending=False),
-                         column_config = 투수컬럼포맷설정)
+                df['팀'] = df['시즌소속팀'].apply(get_base64_emblem)
+            
+            display_df = df[['이름', '팀'] + 투수리더보드_표시컬럼].sort_values('이닝', ascending=False)
+            st.dataframe(display_df,
+                         hide_index=True,
+                         use_container_width=True,
+                         column_config={
+                             "팀": st.column_config.ImageColumn(label="팀", width="small"),
+                             **투수컬럼포맷설정
+                         })
 
         except KeyError:
             st.markdown('데이터 없음')

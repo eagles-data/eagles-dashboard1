@@ -182,7 +182,7 @@ def execute_dml_query(query: str,
         raise
 
 @st.cache_resource
-def get_gcs_storage_options():
+def get_storage_options():
     """
     로컬(파일/Secrets) 및 Cloud Run(환경변수/IAM) 환경에 모두 대응하는 GCS 설정 반환
     """

@@ -3,6 +3,22 @@ from matplotlib.colors import ListedColormap, LinearSegmentedColormap
 from enum import IntEnum
 import numpy as np
 import streamlit as st
+import base64
+
+def get_base64_emblem(team_name):
+    """팀 이름을 기반으로 images/ 폴더의 엠블럼을 Base64 문자열로 반환"""
+    from .codes import 팀코드_KBO
+    code = 팀코드_KBO.get(team_name)
+    if code and code != 'None':
+        file_path = f"images/emblem_{code}.png"
+        try:
+            with open(file_path, "rb") as f:
+                data = f.read()
+                base64_str = base64.b64encode(data).decode()
+                return f"data:image/png;base64,{base64_str}"
+        except FileNotFoundError:
+            return None
+    return None
 
 # 2026 season
 season_start_month = 3
@@ -150,6 +166,27 @@ ball_colors = {
 
 손순서 = ['우', '좌', '우사', '좌사', '스위치']
 
+팀코드_KBO = {
+    '한화': 'HH',
+    '빙그레': 'HH',
+    'KIA': 'HT',
+    '해태': 'HT',
+    'KT': 'KT',
+    'LG': 'LG',
+    'NC': 'NC',
+    'SSG': 'SK',
+    'SK': 'SK',
+    '두산': 'OB',
+    'OB': 'OB',
+    '롯데': 'LT',
+    '삼성': 'SS',
+    '키움': 'WO',
+    '넥센': 'WO',
+    '우리': 'WO',
+    '히어로즈': 'WO',
+    '상무': 'SM',
+    '없음': 'None'
+}
 
 고교야구팀들 = {
     "EPBC(U-18)": ["EUN_U19"],

@@ -6,7 +6,7 @@ from utils.codes import *
 from utils.conn import *
 
 engine = get_conn()
-storage_options = get_gcs_storage_options()
+storage_options = get_storage_options()
 bucket_name = "baseball_app_data_cache"
 summary_uri = f"gs://{bucket_name}/stuffplus/summary"
 pattern = f"{summary_uri}/*.csv.gz"
@@ -221,15 +221,20 @@ cols = ['이름', '날짜',
         '익스텐션',]
 
 if st.button('Load'):
-    df_to_show = t1[cols+['PitcherId']]
+    t1['현소속팀'] = t1['PitcherId'].apply(lambda x: pinfo.get(x)['팀'])
+    t1['팀'] = t1['현소속팀'].apply(get_base64_emblem)
+    
+    df_to_show = t1[cols+['PitcherId', '팀']]
     df_to_show = df_to_show.sort_values(['이름', 'PitcherId', '날짜', '구종'])
 
     if 선택한구종 != '전체':
         df_to_show = df_to_show[df_to_show.구종 == 선택한구종]
 
-    st.dataframe(df_to_show[cols], 
+    FINAL_COLS = ['팀'] + cols
+    st.dataframe(df_to_show[FINAL_COLS], 
                  hide_index=True,
                  column_config = {
+                     "팀": st.column_config.ImageColumn(label="팀", width="small"),
                      "스터프+": st.column_config.NumberColumn(
                          format="%.0f"
                      ),

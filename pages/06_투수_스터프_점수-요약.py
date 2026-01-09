@@ -7,7 +7,7 @@ from utils.codes import *
 from utils.conn import *
 
 engine = get_conn()
-storage_options = get_gcs_storage_options()
+storage_options = get_storage_options()
 bucket_name = "baseball_app_data_cache"
 summary_uri = f"gs://{bucket_name}/stuffplus/summary"
 pattern = f"{summary_uri}/*.csv.gz"
@@ -56,7 +56,7 @@ AND
     return df
 
 @st.cache_data(ttl=43200)
-def load_summary_from_gcs():
+def load_summary():
     fs = gcsfs.GCSFileSystem(**storage_options)
     
     # glob으로 파일 목록 가져오기 (gs:// 접두사 유지를 위해 리스트 컴프리헨션 활용)
@@ -96,7 +96,7 @@ st.subheader("스터프 점수 요약")
 
 #### Summary 파일 읽기
 #서머리테이블, 서머리테이블_퓨처스, lastUpdate = load_summary()
-서머리테이블, 서머리테이블_퓨처스, lastUpdate = load_summary_from_gcs()
+서머리테이블, 서머리테이블_퓨처스, lastUpdate = load_summary()
 st.markdown(f'##### ♻️업데이트 시간: {lastUpdate}')
 서머리테이블 = 서머리테이블.rename(columns = {
                                        'year': '연도',
@@ -140,7 +140,7 @@ with 셀렉터영역[2]:
 with 셀렉터영역[-1]:
     if st.button("Clear Cache"):
         load_pids.clear()
-        load_summary_from_gcs.clear()
+        load_summary.clear()
 
 if 선택한레벨 == '1군':
     선택한_서머리테이블 = 서머리테이블
@@ -210,11 +210,13 @@ cols = ['스터프+', '스터프+(모델1)', '스터프+(모델2)', '스터프+(
         '익스텐션', '익스텐션(보정)'
        ]
 
-t1 = t1.set_index(['연도', '팀', '이름', '구종', '투구수',])
+t1 = t1.rename(columns={'팀': '현소속팀'})
+t1['팀'] = t1['현소속팀'].apply(get_base64_emblem)
 
 st.dataframe(t1[cols], 
-             hide_index=False,
+             hide_index=True,
              column_config = {
+                 "팀": st.column_config.ImageColumn(label="팀", width="small"),
                  "스터프+": st.column_config.NumberColumn(
                      format="%.0f"
                  ),

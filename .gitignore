@@ -36,4 +36,4 @@ venv/
 *.json
 *.toml
 *.log
-
+.DS_Store

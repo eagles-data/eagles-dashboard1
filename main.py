@@ -3,6 +3,7 @@ import streamlit as st
 pages = {
     "리더보드": [
         st.Page("pages/01_리더보드.py", title="KBO 스탯 리더보드"),
+        st.Page("pages/14_구종별_리더보드.py", title="구종별 리더보드"),
     ],
     "투수 데이터": [
         st.Page("pages/02_투수_무브먼트_차트.py", title="무브먼트 차트"),
@@ -22,5 +23,5 @@ pages = {
     ],
 }
 
-pg = st.navigation(pages, position="sidebar")
+pg = st.navigation(pages, position="top")
 pg.run()
