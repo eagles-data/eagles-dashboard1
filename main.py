@@ -9,9 +9,9 @@ pages = {
         st.Page("pages/02_투수_무브먼트_차트.py", title="무브먼트 차트"),
         st.Page("pages/03_투수_경기별_데이터_요약.py", title="경기별 데이터 요약"),
         st.Page("pages/04_투수_경기별_트래킹_데이터_그래프.py", title="Daily 트래킹 데이터 그래프"),
-        st.Page("pages/05_투수_VAA_차트.py", title="VAA 차트"),
         st.Page("pages/06_투수_스터프_점수-요약.py", title="스터프 점수 - 요약"),
         st.Page("pages/07_투수_스터프_점수-경기별.py", title="스터프 점수 - 경기별"),
+        st.Page("pages/05_투수_VAA_차트.py", title="VAA 차트"),
     ],
     "ABS": [
         st.Page("pages/08_구장별_ABS_존_비교.py", title="구장별 ABS 존 비교"),

@@ -208,7 +208,7 @@ st.set_page_config(
     page_icon = "📊",
     layout='wide',
 )
-st.title("리그 평균 기록")
+st.markdown("##### 리그 평균 기록")
 
 셀렉트컬럼 = st.columns(6)
 with 셀렉트컬럼[0]:
@@ -217,7 +217,7 @@ with 셀렉트컬럼[0]:
 tab1, tab2 = st.tabs(["타자", "투수"])
 
 with tab1:
-    st.header("타자 리그 평균값")
+    st.subheader("타자 리그 평균값")
 
     # 연도/월 선택 (월별 테이블이 없으면 연도별만 제공)
     df = get_hitter_yearly_summary(level_dict[level])
@@ -325,7 +325,7 @@ with tab1:
         # st.write(df.columns)
 
 with tab2:
-    st.header("투수 리그 평균값")
+    st.subheader("투수 리그 평균값")
 
     # 연도/월 선택 (월별 테이블이 없으면 연도별만 제공)
     df = get_pitcher_yearly_summary(level_dict[level])

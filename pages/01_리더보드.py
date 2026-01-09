@@ -315,9 +315,11 @@ with 타자탭:
                 df = df[df.시즌소속팀.isin(팀선택)]
                 df['팀'] = df['시즌소속팀'].apply(get_base64_emblem)
             
-            display_df = df[['이름', '팀'] + 타자리더보드_표시컬럼].sort_values('타석', ascending=False)
-            st.dataframe(display_df,
-                         hide_index=True,
+            display_df = df[['이름', '팀'] + 타자리더보드_표시컬럼]
+            st.dataframe(display_df\
+                         .set_index(['이름', '팀'])\
+                         .sort_values('타석', ascending=False),
+                         hide_index=False,
                          width='content',
                          column_config={
                              "팀": st.column_config.ImageColumn(label="팀", width="small"),
@@ -427,9 +429,11 @@ with 투수탭:
                 df = df[df.시즌소속팀.isin(팀선택)]
                 df['팀'] = df['시즌소속팀'].apply(get_base64_emblem)
             
-            display_df = df[['이름', '팀'] + 투수리더보드_표시컬럼].sort_values('이닝', ascending=False)
-            st.dataframe(display_df,
-                         hide_index=True,
+            display_df = df[['이름', '팀'] + 투수리더보드_표시컬럼]
+            st.dataframe(display_df\
+                         .set_index(['이름', '팀'])\
+                         .sort_values('이닝', ascending=False),
+                         hide_index=False,
                          width='content',
                          column_config={
                              "팀": st.column_config.ImageColumn(label="팀", width="small"),

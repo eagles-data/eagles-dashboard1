@@ -15,7 +15,7 @@ st.set_page_config(
     page_icon = "🏫",
     layout='wide',
 )
-st.title("고교야구 무브먼트 플롯")
+st.markdown("##### 고교야구 무브먼트 플롯")
 
 engine = get_conn()
 최대연도 = get_max_year(engine)

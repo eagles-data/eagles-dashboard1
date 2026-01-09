@@ -18,8 +18,6 @@ st.set_page_config(
     page_icon = "🎨",
     layout='wide',
 )
-st.title("트랙맨 ABS 비교")
-
 st.markdown("##### 트랙맨 기준, ABS에서 스트 판정 받은 공으로 그린 존.")
 
 
@@ -27,21 +25,8 @@ st.markdown("##### 트랙맨 기준, ABS에서 스트 판정 받은 공으로 �
 def load_data():
     return pd.read_parquet(parquet_file_path, 
                            engine='pyarrow', 
-                           storage_options=get_gcs_storage_options())
+                           storage_options=get_storage_options())
 
-
-rightborder_x = np.ones(100)*0.2740
-leftborder_x = np.ones(100)*(-0.2740)
-rightborder_y = np.linspace(0, 1, 100)
-leftborder_y = np.linspace(0, 1, 100)
-
-topborder_x = np.linspace(-0.2740, 0.2740, 100)
-botborder_x = np.linspace(-0.2740, 0.2740, 100)
-topborder_y = np.ones(100)
-botborder_y = np.zeros(100)
-
-absborder_x = np.concatenate([rightborder_x, topborder_x[::-1], leftborder_x, botborder_x])
-absborder_y = np.concatenate([rightborder_y, topborder_y, leftborder_y[::-1], botborder_y])
 
 # 데이터 읽어오기
 with st.spinner('loading data...'):
@@ -56,7 +41,7 @@ with 버튼표시영역[-1]:
         load_data.clear()
 
 with 버튼표시영역[0]:
-    st.markdown('### 최근 N경기 보기')
+    st.markdown('##### 최근 N경기 보기')
     select_games = st.slider('최근 N경기?', 0, 20, 10)
 
 with 버튼표시영역[1]:
@@ -64,7 +49,7 @@ with 버튼표시영역[1]:
     st.caption(chart_color)
 
 with 버튼표시영역[2]:
-    st.markdown('### 기간 지정해서 보기')
+    st.markdown('##### 기간 지정해서 보기')
     제일앞날짜 = datetime.date(최대연도, 2, 1)
     제일끝날짜 = 최대날짜
     앞날짜선택 = st.date_input("기간 - 시작일 선택",

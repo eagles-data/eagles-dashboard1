@@ -250,8 +250,10 @@ t1['팀'] = t1['현소속팀'].apply(get_base64_emblem)
 테이블영역 = st.columns([4, 2])
 
 with 테이블영역[0]:
-    st.dataframe(t1[cols].sort_values(by='스터프+', ascending=False), 
-                 hide_index=True,
+    st.dataframe(t1[cols]\
+                 .set_index(['이름', '팀'])\
+                 .sort_values(by='스터프+', ascending=False), 
+                 hide_index=False,
                  width='content',
                  column_config = {
                      "팀": st.column_config.ImageColumn(label="팀", width="small"),

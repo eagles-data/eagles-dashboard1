@@ -70,7 +70,7 @@ st.set_page_config(
     layout='wide',
 )
 
-st.subheader("퓨처스 포지션 뎁스")
+st.markdown("##### 퓨처스 포지션 뎁스")
 
 
 #### 트랙맨 파일 읽기

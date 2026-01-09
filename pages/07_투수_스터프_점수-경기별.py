@@ -265,8 +265,11 @@ if st.button('Load'):
         df_to_show = df_to_show[df_to_show.구종 == 선택한구종]
 
     FINAL_COLS = ['팀'] + cols
-    st.dataframe(df_to_show[FINAL_COLS], 
-                 hide_index=True,
+    st.dataframe(df_to_show[FINAL_COLS]\
+                 .set_index(['이름', '팀'])\
+                 .sort_values(by='스터프+', ascending=False), 
+                 hide_index=False,
+                 width='content',
                  column_config = {
                      "팀": st.column_config.ImageColumn(label="팀", width="small"),
                      "스터프+": st.column_config.NumberColumn(

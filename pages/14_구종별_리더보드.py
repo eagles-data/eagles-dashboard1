@@ -148,8 +148,8 @@ with 테이블영역[0]:
 
     if not df.empty:
         st.dataframe(
-            df[display_cols].sort_values('평균구속', ascending=False),
-            hide_index=True,
+            df[display_cols].set_index(['이름', '팀']).sort_values('평균구속', ascending=False),
+            hide_index=False,
             width='content',
             column_config={
                 "팀": st.column_config.ImageColumn(label="팀", width="small"),
