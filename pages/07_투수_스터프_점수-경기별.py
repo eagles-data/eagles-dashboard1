@@ -91,11 +91,11 @@ st.set_page_config(
     page_icon = "⚾️🔥",
     layout='wide',
 )
-st.subheader("스터프 점수 (경기별)")
+st.markdown("##### 스터프 점수 (경기별)")
 
 #### Summary 파일 읽기
 서머리게임테이블, 서머리게임테이블_퓨처스, lastUpdate = load_stuff_by_game()
-st.markdown(f'##### ♻️업데이트 시간: {lastUpdate}')
+#st.markdown(f'##### ♻️업데이트 시간: {lastUpdate}')
 
 서머리게임테이블 = 서머리게임테이블.rename(columns = {
                                                'year': '연도',
@@ -132,8 +132,22 @@ st.markdown(f'##### ♻️업데이트 시간: {lastUpdate}')
                                                              'Extension_mod': '익스텐션(보정)',
                                                          })
 
-#### pitcher id 읽기
+@st.cache_data(ttl=86400)
+def load_season_teams():
+    query = f"""
+    SELECT 
+        `year`, 
+        `level_eng`, 
+        tmid, 
+        IF(team='고양', '키움', team) AS 시즌소속팀
+    FROM `stats_logs`.stats_pitcher
+    WHERE `year` BETWEEN 2021 AND 2025
+    """
+    return get_sql_df(query, engine)
+
+# pitcher id 읽기
 pids = load_pids()
+season_teams = load_season_teams()
 
 셀렉터영역 = st.columns(8)
 with 셀렉터영역[0]:
@@ -142,10 +156,11 @@ with 셀렉터영역[0]:
                               ["전체"] + 연도목록,
                               index=len(연도목록))
 with 셀렉터영역[1]:
+    현시즌구분 = st.radio("팀 분류", ["현재", "시즌"], index=1, horizontal=True)
     선택한팀 = st.selectbox("팀",
                             ["전체", "한화", "KIA", "KT", "LG", "NC", "SSG",
                              "두산", "롯데", "삼성", "키움", "상무"],
-                            index=1)
+                            index=0)
 
 with 셀렉터영역[2]:
     선택한레벨 = st.selectbox("레벨",
@@ -156,6 +171,7 @@ with 셀렉터영역[-1]:
     if st.button("Clear Cache"):
         load_pids.clear()
         load_stuff_by_game.clear()
+        load_season_teams.clear()
 
 if 선택한레벨 == '1군':
     선택한_서머리테이블 = 서머리게임테이블
@@ -166,12 +182,31 @@ else:
 pitchers = pids[pids.tm_id.isin(테이블내_투수ID목록)]
 pinfo = pitchers.set_index('tm_id').to_dict(orient='index')
 
-선택한_서머리테이블 = 선택한_서머리테이블.assign(팀 = 선택한_서머리테이블.PitcherId.apply(lambda x: pinfo.get(x)['팀']))
+# 현소속팀 vs 시즌소속팀 매핑
+level_map = {"1군": "KBO", "퓨처스": "KBO Minors"}
+current_level_eng = level_map.get(선택한레벨)
+
+if 현시즌구분 == "현재":
+    선택한_서머리테이블 = 선택한_서머리테이블.assign(팀 = 선택한_서머리테이블.PitcherId.apply(lambda x: pinfo.get(x)['팀']))
+else:
+    # 시즌 소속팀 매핑 (연도, 레벨, tmid 기준)
+    st_mapping = season_teams[season_teams.level_eng == current_level_eng].set_index(['year', 'tmid'])['시즌소속팀'].to_dict()
+    
+    def match_season_team(row):
+        pid = row['PitcherId']
+        yr = row['연도']
+        s_team = st_mapping.get((yr, pid))
+        if s_team:
+            return s_team
+        return pinfo.get(pid, {}).get('팀', '없음') # 정보 없으면 현소속팀으로 보완
+
+    선택한_서머리테이블 = 선택한_서머리테이블.assign(팀 = 선택한_서머리테이블.apply(match_season_team, axis=1))
 
 if 선택한팀 != '전체':
-    드롭다운_투수명단 = pitchers[pitchers.팀 == 선택한팀]
-else:
-    드롭다운_투수명단 = pitchers
+    선택한_서머리테이블 = 선택한_서머리테이블[선택한_서머리테이블.팀 == 선택한팀]
+
+# 드롭다운 투수 명단 필터링 (선택된 팀에 속한 투수들만 표시)
+드롭다운_투수명단 = pitchers[pitchers.tm_id.isin(선택한_서머리테이블.PitcherId.unique())]
 드롭다운_투수명단 = 드롭다운_투수명단.sort_values('name')
 
 with 셀렉터영역[3]:
@@ -221,8 +256,7 @@ cols = ['이름', '날짜',
         '익스텐션',]
 
 if st.button('Load'):
-    t1['현소속팀'] = t1['PitcherId'].apply(lambda x: pinfo.get(x)['팀'])
-    t1['팀'] = t1['현소속팀'].apply(get_base64_emblem)
+    t1['팀'] = t1['팀'].apply(get_base64_emblem)
     
     df_to_show = t1[cols+['PitcherId', '팀']]
     df_to_show = df_to_show.sort_values(['이름', 'PitcherId', '날짜', '구종'])

@@ -175,10 +175,7 @@ st.set_page_config(
     page_icon = "📊",
     layout='wide',
 )
-st.title('리더보드')
-st.subheader("KBO 스탯 리더보드")
-
-st.markdown('##### KBO 1군/퓨처스 기록을 표시합니다.')
+st.markdown('##### KBO 1군/퓨처스 기록')
 
 #### 트랙맨 파일 읽기
 #### 연도: DataFrame 형식
@@ -199,7 +196,7 @@ with 셀렉터영역[0]:
 with 셀렉터영역[1]:
     레벨선택 = st.radio("레벨 선택", ["1군", "퓨처스"], index=0, horizontal=True)
 
-    현소속or원소속 = st.radio('현소속팀/원소속팀', ['현재', '원소속', '시즌당시소속'], index=0, horizontal=True)
+    현소속or원소속 = st.radio('현소속팀/원소속팀', ['현재', '원소속', '시즌당시소속'], index=2, horizontal=True)
 
 with 셀렉터영역[2]:
     팀옵션 = ["한화", "KIA", "KT", "LG", "NC", "SSG",
@@ -321,7 +318,7 @@ with 타자탭:
             display_df = df[['이름', '팀'] + 타자리더보드_표시컬럼].sort_values('타석', ascending=False)
             st.dataframe(display_df,
                          hide_index=True,
-                         use_container_width=True,
+                         width='content',
                          column_config={
                              "팀": st.column_config.ImageColumn(label="팀", width="small"),
                              **타자컬럼포맷설정
@@ -433,7 +430,7 @@ with 투수탭:
             display_df = df[['이름', '팀'] + 투수리더보드_표시컬럼].sort_values('이닝', ascending=False)
             st.dataframe(display_df,
                          hide_index=True,
-                         use_container_width=True,
+                         width='content',
                          column_config={
                              "팀": st.column_config.ImageColumn(label="팀", width="small"),
                              **투수컬럼포맷설정

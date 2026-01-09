@@ -803,11 +803,11 @@ def 구종색상범례_문자열생성(구종색상딕셔너리,
 #######################
 
 st.set_page_config(
-    page_title = "투수 경기별 요약",
+    page_title = "투수 경기별 데이터 요약",
     page_icon = "📝",
     layout='wide',
 )
-st.title("투수 경기별 요약")
+st.markdown("##### 투수 경기별 데이터요약")
 
 dpi = 100
 plt.style.use('fivethirtyeight')
@@ -1630,8 +1630,6 @@ with 테이블세팅[1]:
                 st.dataframe(연도별_리그_평균.set_index('구종')[표시컬럼],
                              hide_index=False,
                              column_config=컬럼표시설정)
-                #ax = 차트용테이블변환(연도별_리그_평균, ['구종']+표시컬럼)
-                #st.pyplot(ax.get_figure(), use_container_width=True)
             else:
                 연도별_리그_평균['구종'] = 연도별_리그_평균.구종.apply(lambda x: 구종한글_영문으로변환.get(x))
                 table = 연도별_리그_평균.rename(columns=영문으로_컬럼바꾸기).set_index('Type')
@@ -1639,8 +1637,6 @@ with 테이블세팅[1]:
                 st.dataframe(table[표시컬럼],
                              hide_index=False,
                              column_config=컬럼표시설정_영문)
-                #ax = 차트용테이블변환(연도별_리그_평균.rename(columns=영문으로_컬럼바꾸기), ['Type']+표시컬럼)
-                #st.pyplot(ax.get_figure(), use_container_width=True)
 
         else:
             st.markdown('**비교대상 없음**')

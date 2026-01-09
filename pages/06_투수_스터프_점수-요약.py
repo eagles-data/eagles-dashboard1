@@ -91,13 +91,12 @@ st.set_page_config(
     page_icon = "⚾️🔥",
     layout='wide',
 )
-st.subheader("스터프 점수 요약")
+st.markdown("##### 스터프 점수 요약")
 
 
 #### Summary 파일 읽기
-#서머리테이블, 서머리테이블_퓨처스, lastUpdate = load_summary()
 서머리테이블, 서머리테이블_퓨처스, lastUpdate = load_summary()
-st.markdown(f'##### ♻️업데이트 시간: {lastUpdate}')
+#st.markdown(f'##### ♻️업데이트 시간: {lastUpdate}')
 서머리테이블 = 서머리테이블.rename(columns = {
                                        'year': '연도',
                                        'TaggedPitchType': '구종',
@@ -117,8 +116,22 @@ st.markdown(f'##### ♻️업데이트 시간: {lastUpdate}')
                                                      'Stuff_xgboost': '스터프+(모델3)',
                                                  })
 
-#### pitcher id 읽기
+@st.cache_data(ttl=86400)
+def load_season_teams():
+    query = f"""
+    SELECT 
+        `year`, 
+        `level_eng`, 
+        tmid, 
+        IF(team='고양', '키움', team) AS 시즌소속팀
+    FROM `stats_logs`.stats_pitcher
+    WHERE `year` BETWEEN 2021 AND 2025
+    """
+    return get_sql_df(query, engine)
+
+# pitcher id 읽기
 pids = load_pids()
+season_teams = load_season_teams()
 
 셀렉터영역 = st.columns(8)
 with 셀렉터영역[0]:
@@ -127,10 +140,11 @@ with 셀렉터영역[0]:
                               ["전체"] + 연도목록,
                               index=len(연도목록))
 with 셀렉터영역[1]:
+    현시즌구분 = st.radio("팀 분류", ["현재", "시즌"], index=1, horizontal=True)
     선택한팀 = st.selectbox("팀",
                             ["전체", "한화", "KIA", "KT", "LG", "NC", "SSG",
                              "두산", "롯데", "삼성", "키움", "상무"],
-                            index=1)
+                            index=0)
 
 with 셀렉터영역[2]:
     선택한레벨 = st.selectbox("레벨",
@@ -141,6 +155,7 @@ with 셀렉터영역[-1]:
     if st.button("Clear Cache"):
         load_pids.clear()
         load_summary.clear()
+        load_season_teams.clear()
 
 if 선택한레벨 == '1군':
     선택한_서머리테이블 = 서머리테이블
@@ -151,12 +166,31 @@ else:
 pitchers = pids[pids.tm_id.isin(테이블내_투수ID목록)]
 pinfo = pitchers.set_index('tm_id').to_dict(orient='index')
 
-선택한_서머리테이블 = 선택한_서머리테이블.assign(팀 = 선택한_서머리테이블.PitcherId.apply(lambda x: pinfo.get(x)['팀']))
+# 현소속팀 vs 시즌소속팀 매핑
+level_map = {"1군": "KBO", "퓨처스": "KBO Minors"}
+current_level_eng = level_map.get(선택한레벨)
+
+if 현시즌구분 == "현재":
+    선택한_서머리테이블 = 선택한_서머리테이블.assign(팀 = 선택한_서머리테이블.PitcherId.apply(lambda x: pinfo.get(x)['팀']))
+else:
+    # 시즌 소속팀 매핑 (연도, 레벨, tmid 기준)
+    st_mapping = season_teams[season_teams.level_eng == current_level_eng].set_index(['year', 'tmid'])['시즌소속팀'].to_dict()
+    
+    def match_season_team(row):
+        pid = row['PitcherId']
+        yr = row['연도']
+        s_team = st_mapping.get((yr, pid))
+        if s_team:
+            return s_team
+        return pinfo.get(pid, {}).get('팀', '없음') # 정보 없으면 현소속팀으로 보완
+
+    선택한_서머리테이블 = 선택한_서머리테이블.assign(팀 = 선택한_서머리테이블.apply(match_season_team, axis=1))
 
 if 선택한팀 != '전체':
-    드롭다운_투수명단 = pitchers[pitchers.팀 == 선택한팀]
-else:
-    드롭다운_투수명단 = pitchers
+    선택한_서머리테이블 = 선택한_서머리테이블[선택한_서머리테이블.팀 == 선택한팀]
+
+# 드롭다운 투수 명단 필터링 (선택된 팀에 속한 투수들만 표시)
+드롭다운_투수명단 = pitchers[pitchers.tm_id.isin(선택한_서머리테이블.PitcherId.unique())]
 드롭다운_투수명단 = 드롭다운_투수명단.sort_values('name')
 
 with 셀렉터영역[3]:
@@ -181,7 +215,7 @@ if 선택한연도 != '전체':
     t1 = t1[t1.연도 == 선택한연도]
 
 with 셀렉터영역[4]:
-    최소투구수 = st.slider('투구수 ≥', 0, 200, 0, step=5, format='%d')
+    최소투구수 = st.number_input("최소 투구수", min_value=0, value=200, step=50)
 
 with 셀렉터영역[5]:
     선택한구종 = st.selectbox('구종',
@@ -204,8 +238,8 @@ t1 = t1.rename(columns={
     'Extension_mod': '익스텐션(보정)'
 })
 
-
-cols = ['스터프+', '스터프+(모델1)', '스터프+(모델2)', '스터프+(모델3)',
+cols = ['이름', '팀', '구종', '투구수', 
+        '스터프+', '스터프+(모델1)', '스터프+(모델2)', '스터프+(모델3)',
         '구속', '회전수', '수직무브', '좌우무브', '릴리즈높이',
         '익스텐션', '익스텐션(보정)'
        ]
@@ -213,11 +247,15 @@ cols = ['스터프+', '스터프+(모델1)', '스터프+(모델2)', '스터프+(
 t1 = t1.rename(columns={'팀': '현소속팀'})
 t1['팀'] = t1['현소속팀'].apply(get_base64_emblem)
 
-st.dataframe(t1[cols], 
-             hide_index=True,
-             column_config = {
-                 "팀": st.column_config.ImageColumn(label="팀", width="small"),
-                 "스터프+": st.column_config.NumberColumn(
+테이블영역 = st.columns([4, 2])
+
+with 테이블영역[0]:
+    st.dataframe(t1[cols].sort_values(by='스터프+', ascending=False), 
+                 hide_index=True,
+                 width='content',
+                 column_config = {
+                     "팀": st.column_config.ImageColumn(label="팀", width="small"),
+                     "스터프+": st.column_config.NumberColumn(
                      format="%.0f"
                  ),
                  "스터프+(모델1)": st.column_config.NumberColumn(

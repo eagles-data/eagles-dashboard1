@@ -14,7 +14,7 @@ st.set_page_config(
     page_icon = "🎨",
     layout='wide',
 )
-st.title("무브먼트 플롯")
+st.markdown("##### 투수 무브먼트 플롯")
 
 KST = ZoneInfo('Asia/Seoul')
 오늘 = datetime.datetime.now(KST)
@@ -375,7 +375,7 @@ df = 투수데이터(선택한레벨, 선택한연도, 선택한투수ID, 날짜
 
 #####
 set_fonts()
-그림영역 = st.columns([2, 2])
+그림영역 = st.columns([2, 4])
 with 그림영역[0]:
     if len(df) > 0:
         dpi = 100
@@ -446,7 +446,7 @@ with 그림영역[1]:
                         '구속', '최고구속', '회전수', '수직무브', '좌우무브',
                         '릴리즈높이', '익스텐션']],
                      hide_index=True,
-                     use_container_width=False,
+                     width='content',
                      column_config={
                          "구속": st.column_config.NumberColumn(
                              format="%.1f"

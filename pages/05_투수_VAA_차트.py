@@ -14,7 +14,7 @@ st.set_page_config(
     page_icon = "🎨",
     layout='wide',
 )
-st.title("VAA 플롯")
+st.markdown("##### 구종별 VAA 플롯")
 
 KST = ZoneInfo('Asia/Seoul')
 오늘 = datetime.datetime.now(KST)

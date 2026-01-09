@@ -384,7 +384,7 @@ if len(시즌전체데이터) > 0:
                     '구속', '최고구속', '회전수', '수직무브', '좌우무브',
                     '릴리즈높이', '익스텐션']],
                  hide_index=True,
-                 use_container_width=False,
+                 width='content',
                  column_config={
                      "구속": st.column_config.NumberColumn(
                          format="%.1f"

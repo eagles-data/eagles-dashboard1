@@ -282,6 +282,7 @@ with st.spinner('loading data...'):
 
 투수이름_ID_딕셔너리 = {f'{x[0]} ({x[1]})': [x[0], x[1]] for x in 투수ID이름}
 
+st.markdown("##### Daily 트래킹 데이터 그래프")
 
 #######################
 # 선택 영역1: 연도, 레벨, 팀, 투수 선택
@@ -374,4 +375,3 @@ with 셀렉터구역1[5]:
 df = 투수데이터(선택한레벨, 선택한연도, 선택한투수ID, 날짜쿼리, 선택구종)
 
 fig = draw_final_pitcher_chart(df)
-# st.plotly_chart(fig, use_container_width=False)

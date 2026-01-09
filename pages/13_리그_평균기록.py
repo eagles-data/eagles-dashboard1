@@ -229,7 +229,7 @@ with tab1:
     else:
         # 필요하면 컬럼명 한글 변환 등 가공
         st.dataframe(df[타자필요컬럼],
-                     use_container_width=False,
+                     width='content',
                      column_config={
                          "삼진%": st.column_config.NumberColumn(
                              format="%.1f"
@@ -349,7 +349,7 @@ with tab2:
     else:
         # 필요하면 컬럼명 한글 변환 등 가공
         st.dataframe(df[투수필요컬럼],
-                     use_container_width=False,
+                     width='content',
                      column_config={
                          "WHIP": st.column_config.NumberColumn(
                              format="%.2f"
@@ -448,7 +448,7 @@ with tab2:
         
         # 필요하면 컬럼명 한글 변환 등 가공
         st.dataframe(df3[구종별필요컬럼],
-                     use_container_width=False,
+                     width='content',
                      column_config={
                          "구속": st.column_config.NumberColumn(
                              format="%.1f"
