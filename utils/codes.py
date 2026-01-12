@@ -431,7 +431,20 @@ ball_colors = {
      "헛스윙%": st.column_config.NumberColumn(format='%.1f', help='스윙이 나왔을 때 헛스윙이 된 비율'),
      "존컨택%": st.column_config.NumberColumn(format='%.1f', help='S존 안에 투구했을 때 컨택된 비율'),
      "체이스%": st.column_config.NumberColumn(format='%.1f', help='존 밖에 투구했을 때 스윙이 끌려나온 비율'),
+     "구속": st.column_config.NumberColumn(format='%.1f'),
+     "회전수": st.column_config.NumberColumn(format='%d'),
+     "수직무브": st.column_config.NumberColumn(format='%.1f'),
+     "수평무브": st.column_config.NumberColumn(format='%.1f'),
+     "릴리즈높이": st.column_config.NumberColumn(format='%.2f'),
+     "익스텐션": st.column_config.NumberColumn(format='%.2f'),
+     "VRA": st.column_config.NumberColumn(format='%.1f', help='수직 릴리즈 각도; 릴리즈 순간 지면과 공의 궤적이 이루는 각도'),
+     "VAA": st.column_config.NumberColumn(format='%.1f', help='수직 입사 각도; S존에 들어가는 순간 지면과 공의 궤적이 이루는 각도'),
+     "초구스트%": st.column_config.NumberColumn(format='%.1f'),
+     "초구스윙%": st.column_config.NumberColumn(format='%.1f'),
+     "wOBA": st.column_config.NumberColumn(format='%.3f', help='안타/볼넷/사구 등 각 결과에 가중치를 부여, 계산한 종합 타격 생산성지표'),
+     "기대wOBA": st.column_config.NumberColumn(format='%.3f', help='인플레이 타구의 타구속도&발사각에 근거해 예상된 wOBA'),
 }
+
 타자컬럼포맷설정 = {
      "K%": st.column_config.NumberColumn(format='%.1f'),
      "BB%": st.column_config.NumberColumn(format='%.1f'),
@@ -465,15 +478,15 @@ ball_colors = {
      "당긴%": st.column_config.NumberColumn(format='%.1f', help='인플레이 타구 중, 당겨친 타구의 비율'),
      "가운데%": st.column_config.NumberColumn(format='%.1f', help='인플레이 타구 중, 가운데 방향으로 보낸 타구의 비율'),
      "밀어친%": st.column_config.NumberColumn(format='%.1f', help='인플레이 타구 중, 밀어친 타구의 비율'),
-     "PD+EV": st.column_config.NumberColumn(format='%.1f', help='(T-10)x2 + (존컨택-체이스x2)'),
-     "T-10": st.column_config.NumberColumn(format='%.1f', help='선수 개인의 인플레이 타구속도 중 기준 상위 10%에 해당하는 값'),
+     "PD+EV": st.column_config.NumberColumn(format='%.1f', help='(EV 90%)x2 + (존컨택-체이스x2)'),
+     "T-10": st.column_config.NumberColumn(format='%.1f', label='EV 90%', help='선수 개인의 인플레이 타구속도 중 기준 상위 10%(백분위 90%)에 해당하는 값'),
      "최대 타구속도": st.column_config.NumberColumn(format='%.1f', help='선수 개인의 인플레이 타구속도 최대값'),
      "평균 타구속도": st.column_config.NumberColumn(format='%.1f', help='선수 개인의 인플레이 타구속도 평균값'),
      "평균 발사각도": st.column_config.NumberColumn(format='%.1f', help='선수 개인의 인플레이 타구 발사각도 평균값'),
  }
 
 투수리더보드_표시컬럼 = [
-    '나이',
+    #'나이',
     '이닝', 'WHIP', '타자', '피안타', '탈삼진', '볼넷', '홈런',
     'K%', 'BB%', 'K-BB%', 'HR%', 'K/9', 'BB/9', 'HR/9',
     'CSW%' ,'헛스윙%', '존컨택%', '체이스%',
@@ -485,7 +498,7 @@ ball_colors = {
 ]
 
 타자리더보드_표시컬럼 = [
-    '나이',
+    #'나이',
     '타석', '홈런', '타율', '출루율', '장타율', 'OPS',
     'BB%', 'K%', 'HR%', 'BABIP',
     '기대타율', '기대출루율', '기대장타율', '기대OPS',

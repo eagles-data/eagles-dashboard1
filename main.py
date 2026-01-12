@@ -5,6 +5,9 @@ pages = {
         st.Page("pages/01_리더보드.py", title="KBO 스탯 리더보드"),
         st.Page("pages/14_구종별_리더보드.py", title="구종별 리더보드"),
     ],
+    "타자 데이터": [
+        st.Page("pages/15_타자_타구기록_리더보드.py", title="타구 데이터 리더보드"),
+    ],
     "투수 데이터": [
         st.Page("pages/02_투수_무브먼트_차트.py", title="무브먼트 차트"),
         st.Page("pages/03_투수_경기별_데이터_요약.py", title="경기별 데이터 요약"),

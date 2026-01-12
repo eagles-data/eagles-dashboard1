@@ -42,7 +42,7 @@ with 버튼표시영역[-1]:
 
 with 버튼표시영역[0]:
     st.markdown('##### 최근 N경기 보기')
-    select_games = st.slider('최근 N경기?', 0, 20, 10)
+    select_games = st.slider('N = ?', 0, 20, 10)
 
 with 버튼표시영역[1]:
     chart_color = st.color_picker("영역 색상", "#F08080")
@@ -52,10 +52,10 @@ with 버튼표시영역[2]:
     st.markdown('##### 기간 지정해서 보기')
     제일앞날짜 = datetime.date(최대연도, 2, 1)
     제일끝날짜 = 최대날짜
-    앞날짜선택 = st.date_input("기간 - 시작일 선택",
+    앞날짜선택 = st.date_input("시작일",
                                제일앞날짜,
                                format="MM.DD.YYYY")
-    뒷날짜선택 = st.date_input("기간 - 종료일 선택",
+    뒷날짜선택 = st.date_input("종료일",
                                제일끝날짜,
                                format="MM.DD.YYYY")
 

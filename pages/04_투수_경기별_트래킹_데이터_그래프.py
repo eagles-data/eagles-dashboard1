@@ -292,7 +292,7 @@ st.markdown("##### Daily 트래킹 데이터 그래프")
 최소시즌 = min(시즌들)
 
 with 셀렉터구역1[0]:
-    선택한연도 = st.selectbox(label="연도 선택",
+    선택한연도 = st.selectbox(label="시즌",
                                options=['전체']+시즌들,
                                placeholder='...연도 선택',
                                index=1)
@@ -300,13 +300,13 @@ with 셀렉터구역1[0]:
         선택한연도 = None
 
 with 셀렉터구역1[1]:
-    선택한레벨 = st.selectbox(label = '레벨 선택',
+    선택한레벨 = st.selectbox(label = '1군/퓨처스',
                               options = ('전체', '1군', '퓨처스', '정규', '포스트시즌', '정규+포시', '시범'),
                               placeholder = '...레벨 선택',
                               index=0)
 
 with 셀렉터구역1[2]:
-    선택한투수 = st.selectbox(label = "투수 선택",
+    선택한투수 = st.selectbox(label = "투수",
                               options = 투수이름리스트,
                               placeholder = '...투수')
 
@@ -335,11 +335,11 @@ else:
         제일끝날짜 = datetime.date(선택한연도, 12, 31)
 
 with 셀렉터구역1[3]:
-    앞날짜 = st.date_input("시작일 선택",
+    앞날짜 = st.date_input("시작일",
                            제일앞날짜,
                            format="YYYY.MM.DD")
 with 셀렉터구역1[4]:
-    뒷날짜 = st.date_input("종료일 선택",
+    뒷날짜 = st.date_input("종료일",
                            제일끝날짜,
                            format="YYYY.MM.DD")
     앞날짜텍스트 = 앞날짜.strftime('%y.%m.%d')
@@ -368,7 +368,7 @@ else:
 with 셀렉터구역1[5]:
     ### 구종 체크박스
     구종옵션 = ['직구', '투심', '슬라', '커터', '스위퍼', '커브', '체인', '포크']
-    선택구종 = st.selectbox("구종선택", 구종옵션)
+    선택구종 = st.selectbox("구종", 구종옵션)
 
 
 #### 선택한 투수 투구 데이터 가져오기

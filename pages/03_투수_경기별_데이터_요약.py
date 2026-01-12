@@ -29,6 +29,7 @@ engine = get_conn()
      format="%.1f"
     ),
     "비율": st.column_config.NumberColumn(
+     label="%",
      format="%d%%"
     ),
     "회전수": st.column_config.NumberColumn(
@@ -38,6 +39,7 @@ engine = get_conn()
      format="%.1f"
     ),
     "좌우무브": st.column_config.NumberColumn(
+     label="수평무브",
      format="%.1f"
     ),
     "릴리즈높이": st.column_config.NumberColumn(
@@ -830,21 +832,21 @@ with st.spinner('loading data...'):
 최소시즌 = min(시즌들)
 
 with 셀렉터구역1[0]:
-    선택한연도 = st.selectbox(label="연도 선택",
+    선택한연도 = st.selectbox(label="시즌",
                                options=['전체']+시즌들,
                                placeholder='...연도 선택',
                                index=1)
     if 선택한연도 == '전체':
         선택한연도 = None
 
-    선택한레벨 = st.selectbox(label = '레벨 선택',
+    선택한레벨 = st.selectbox(label = '1군/퓨처스',
                               options = ('전체', '1군', '퓨처스', '정규', '포스트시즌', '정규+포시', '시범'),
                               placeholder = '...레벨 선택',
                               index=0)
     레벨 = 레벨영어변환[선택한레벨]
 
 with 셀렉터구역1[1]:
-    선택한투수 = st.selectbox(label = "투수 선택",
+    선택한투수 = st.selectbox(label = "투수",
                               options = 투수이름리스트,
                               placeholder = '...투수')
 
@@ -871,10 +873,10 @@ else:
         제일끝날짜 = datetime.date(선택한연도, 12, 31)
 
 with 셀렉터구역1[2]:
-    앞날짜 = st.date_input("시작일 선택",
+    앞날짜 = st.date_input("시작일",
                            제일앞날짜,
                            format="YYYY.MM.DD")
-    뒷날짜 = st.date_input("종료일 선택",
+    뒷날짜 = st.date_input("종료일",
                            제일끝날짜,
                            format="YYYY.MM.DD")
     앞날짜텍스트 = 앞날짜.strftime('%y.%m.%d')
@@ -905,7 +907,7 @@ with 셀렉터구역1[3]:
         경기일옵션.sort(reverse=True)
         경기일옵션 = ['전체'] + 경기일옵션
 
-        선택한경기날 = st.selectbox(label = '경기일 선택',
+        선택한경기날 = st.selectbox(label = '경기일',
                                     options = 경기일옵션,
                                     placeholder = '...경기일 선택',
                                     index=0)

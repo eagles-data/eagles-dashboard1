@@ -107,12 +107,12 @@ seasons = list(range(최대연도-4, 최대연도+1))[::-1]
 최소시즌 = min(seasons)
 
 with 셀렉터영역[0]:
-    선택한연도 = st.selectbox(label="연도 선택",
+    선택한연도 = st.selectbox(label="시즌",
                               options=['전체'] + seasons,
                               placeholder='...연도 선택',
                               index=1)
 with 셀렉터영역[1]:
-    팀선택 = st.selectbox(label = '팀 선택',
+    팀선택 = st.selectbox(label = "팀",
                           options = ['전체'] + list(고교야구팀들.keys()),
                           placeholder = '...팀 선택',
                           index=0)
@@ -140,7 +140,7 @@ def sort_key(word):
 투수딕셔너리 = {f'{x[0]} ({x[1]})': [x[0], x[1]] for x in 이름_ID리스트}
 
 with 셀렉터영역[2]:
-    투수선택 = st.selectbox(label = "투수 선택",
+    투수선택 = st.selectbox(label = "투수",
                             options = 투수이름_ID조합,
                             placeholder = '...투수')
 
@@ -157,7 +157,7 @@ with 셀렉터영역[3]:
         경기일옵션.sort(reverse=True)
         경기일옵션 = ['전체'] + 경기일옵션
 
-        선택한경기날 = st.selectbox(label = '경기일 선택',
+        선택한경기날 = st.selectbox(label = '경기일',
                                     options = 경기일옵션,
                                     placeholder = '...경기일 선택',
                                     index=0)
@@ -221,7 +221,7 @@ with 셀렉터영역[-1]:
     ### 구종 체크박스
     구종옵션 = ['직구', '투심', '슬라', '커터', '스위퍼', '커브', '체인', '포크']
 
-    선택한구종들 = st.pills("구종선택", 구종옵션, default=구종옵션, selection_mode="multi")
+    선택한구종들 = st.pills("구종", 구종옵션, default=구종옵션, selection_mode="multi")
 
     선택구종 = []
     if '직구' in 선택한구종들:

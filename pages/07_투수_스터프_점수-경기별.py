@@ -152,7 +152,7 @@ season_teams = load_season_teams()
 셀렉터영역 = st.columns(8)
 with 셀렉터영역[0]:
     연도목록 = 서머리게임테이블.연도.unique().tolist()
-    선택한연도 = st.selectbox("연도",
+    선택한연도 = st.selectbox("시즌",
                               ["전체"] + 연도목록,
                               index=len(연도목록))
 with 셀렉터영역[1]:
@@ -163,7 +163,7 @@ with 셀렉터영역[1]:
                             index=0)
 
 with 셀렉터영역[2]:
-    선택한레벨 = st.selectbox("레벨",
+    선택한레벨 = st.selectbox("1군/퓨처스",
                               ["1군", "퓨처스"],
                               index=0)
 

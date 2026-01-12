@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 
-from utils.codes import 구종영문_한글로변환, 손변환, 구종순서, 손순서
+from utils.codes import *
 from utils.conn import *
 
 level_dict = {
@@ -23,9 +23,9 @@ engine = get_conn()
     'BABIP': 'BABIP',
     'wOBA': 'wOBA',
     'xwOBA': '기대wOBA',
-    'bb_rate': '볼넷%',
-    'k_rate': '삼진%',
-    'hr_rate': '홈런%',
+    'bb_rate': 'BB%',
+    'k_rate': 'K%',
+    'hr_rate': 'HR%',
     'hardhit_rate': '강한타구%',
     'barrel_rate': '배럴%',
     'flareburner_rate': '단타성타구%',
@@ -33,16 +33,17 @@ engine = get_conn()
     'zcon_rate': '존컨택%',
     'chase_rate': '체이스%',
     'swing_rate': '스윙%',
-    'ocon_rate': '아웃존컨택%',
+    'ocon_rate': '아웃컨%',
     'con_rate': '컨택%',
     'gb_rate': '땅볼%',
     'ld_rate': '라인%',
     'fb_rate': '뜬공%',
+    'pfb_rate': '약한뜬공%',
     'pu_rate': '팝업%',
     'pull_rate': '당긴%',
     'center_rate': '가운데%',
     'oppo_rate': '밀어친%',
-    'max_ev': '최고 타구속도',
+    'max_ev': '최대 타구속도',
     'mean_ev': '평균 타구속도',
     'mean_la': '평균 발사각도',
     'pullair_rate': 'PullAir%',
@@ -50,23 +51,24 @@ engine = get_conn()
 
 타자필요컬럼 = [
     '타율', '출루율', '장타율', 'OPS', 'BABIP', 'wOBA',
-    '볼넷%', '삼진%', '홈런%',
+    'BB%', 'K%', 'HR%',
     '강한타구%', '배럴%', '단타성타구%', 'PullAir%',
-    '최고 타구속도', '평균 타구속도', '평균 발사각도',
-    '존스윙%', '체이스%', '스윙%', '존컨택%', '아웃존컨택%', '컨택%',
-    '땅볼%', '라인%', '뜬공%', '팝업%', '당긴%', '가운데%', '밀어친%',
+    '최대 타구속도', '평균 타구속도', '평균 발사각도',
+    '존스윙%', '체이스%', '스윙%', '존컨택%', '아웃컨%', '컨택%',
+    '땅볼%', '라인%', '뜬공%', '약한뜬공%', '팝업%',
+    '당긴%', '가운데%', '밀어친%',
 ]
 
 투수컬럼명바꾸기 = {
     'year': '연도',
     'whip': 'WHIP',
-    'k_rate': '삼진%',
-    'bb_rate': '볼넷%',
+    'k_rate': 'K%',
+    'bb_rate': 'BB%',
     'k_minus_bb_rate': 'K-BB%',
-    'hr_rate': '홈런%',
-    'k_per_9': '삼진/9',
-    'bb_per_9': '볼넷/9',
-    'hr_per_9': '홈런/9',
+    'hr_rate': 'HR%',
+    'k_per_9': 'K/9',
+    'bb_per_9': 'BB/9',
+    'hr_per_9': 'HR/9',
     'csw_rate': 'CSW%',
     'whiff_rate': '헛스윙%',
     'zone_rate': '존%',
@@ -94,7 +96,7 @@ engine = get_conn()
 }
 
 투수필요컬럼 = [
-    'WHIP', '삼진%', '볼넷%', 'K-BB%', '홈런%', '삼진/9', '볼넷/9', '홈런/9',
+    'WHIP', 'K%', 'BB%', 'K-BB%', 'HR%', 'K/9', 'BB/9', 'HR/9',
     'CSW%', '헛스윙%', '존%', '스트%', 
     '피안타율', '피출루율', '피장타율', '피OPS', 'BABIP',
     '강한타구%', '배럴%', '단타성타구%',
@@ -133,7 +135,7 @@ engine = get_conn()
     'exit_velo': '타구속도',
     'gb_pct': '땅볼%',
     'fb_pct': '뜬공%',
-    'ld_pct': '라이너%',
+    'ld_pct': '라인%',
     'pu_pct': '팝업%',
     'hardhit_pct': '강한타구%',
     'barrel_pct': '배럴%',
@@ -161,7 +163,7 @@ engine = get_conn()
     '스트%', '존%', '헛스윙%', 'CSW%', '초구스트%', '초구스윙%',
     '피안타율', '피출루율', '피장타율', '피OPS', 'wOBA',
     '기대피안타율', '기대피출루율', '기대피장타율', '기대피OPS', '기대wOBA',
-    '땅볼%', '뜬공%', '라이너%', '팝업%', '강한타구%', '배럴%',
+    '땅볼%', '뜬공%', '라인%', '팝업%', '강한타구%', '배럴%',
 ]
 
 def get_hitter_yearly_summary(level='KBO',
@@ -221,7 +223,7 @@ with tab1:
 
     # 연도/월 선택 (월별 테이블이 없으면 연도별만 제공)
     df = get_hitter_yearly_summary(level_dict[level])
-    df = df.rename(columns=타자컬럼명바꾸기)
+    df = df.rename(columns=타자컬럼명변환)
     df = df.set_index(['연도'])
 
     if df.empty:
@@ -231,96 +233,8 @@ with tab1:
         st.dataframe(df[타자필요컬럼],
                      width='content',
                      column_config={
-                         "삼진%": st.column_config.NumberColumn(
-                             format="%.1f"
-                         ),
-                         "볼넷%": st.column_config.NumberColumn(
-                             format="%.1f"
-                         ),
-                         "홈런%": st.column_config.NumberColumn(
-                             format="%.1f"
-                         ),
-                         "타율": st.column_config.NumberColumn(
-                             format="%.3f"
-                         ),
-                         "출루율": st.column_config.NumberColumn(
-                             format='%.3f'
-                         ),
-                         "장타율": st.column_config.NumberColumn(
-                             format='%.3f'
-                         ),
-                         "OPS": st.column_config.NumberColumn(
-                             format='%.3f'
-                         ),
-                         "BABIP": st.column_config.NumberColumn(
-                             format='%.3f'
-                         ),
-                         "wOBA": st.column_config.NumberColumn(
-                             format='%.3f'
-                         ),
-                         "기대wOBA": st.column_config.NumberColumn(
-                             format='%.3f'
-                         ),
-                         "땅볼%": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "라인%": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "뜬공%": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "팝업%": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "강한타구%": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "배럴%": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "단타성타구%": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "존스윙%": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "체이스%": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "스윙%": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "존컨택%": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "아웃존컨택%": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "컨택%": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "PullAir%": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "당긴%": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "가운데%": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "밀어친%": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "최고 타구속도": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "평균 타구속도": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "평균 발사각도": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),},
+                         **타자컬럼포맷설정
+                     },
                      hide_index=False)
         # st.write(df.columns)
 
@@ -351,87 +265,7 @@ with tab2:
         st.dataframe(df[투수필요컬럼],
                      width='content',
                      column_config={
-                         "WHIP": st.column_config.NumberColumn(
-                             format="%.2f"
-                         ),
-                         "삼진%": st.column_config.NumberColumn(
-                             format="%.1f"
-                         ),
-                         "볼넷%": st.column_config.NumberColumn(
-                             format="%.1f"
-                         ),
-                         "홈런%": st.column_config.NumberColumn(
-                             format="%.1f"
-                         ),
-                         "K-BB%": st.column_config.NumberColumn(
-                             format="%.1f"
-                         ),
-                         "삼진/9": st.column_config.NumberColumn(
-                             format="%.1f"
-                         ),
-                         "볼넷/9": st.column_config.NumberColumn(
-                             format="%.1f"
-                         ),
-                         "홈런/9": st.column_config.NumberColumn(
-                             format="%.1f"
-                         ),
-                         "피안타율": st.column_config.NumberColumn(
-                             format="%.3f"
-                         ),
-                         "피출루율": st.column_config.NumberColumn(
-                             format='%.3f'
-                         ),
-                         "피장타율": st.column_config.NumberColumn(
-                             format='%.3f'
-                         ),
-                         "피OPS": st.column_config.NumberColumn(
-                             format='%.3f'
-                         ),
-                         "BABIP": st.column_config.NumberColumn(
-                             format='%.3f'
-                         ),
-                         "존%": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "스트%": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "땅볼%": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "라인%": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "뜬공%": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "팝업%": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "땅/뜬": st.column_config.NumberColumn(
-                             format='%.2f'
-                         ),
-                         "강한타구%": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "배럴%": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "단타성타구%": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "CSW%": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "헛스윙%": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "존컨택%": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "체이스%": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
+                         **투수컬럼포맷설정
                      },
                      hide_index=False)
     if df2.empty:
@@ -450,95 +284,6 @@ with tab2:
         st.dataframe(df3[구종별필요컬럼],
                      width='content',
                      column_config={
-                         "구속": st.column_config.NumberColumn(
-                             format="%.1f"
-                         ),
-                         "회전수": st.column_config.NumberColumn(
-                             format='%d'
-                         ),
-                         "수직무브": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "수평무브": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "익스텐션": st.column_config.NumberColumn(
-                             format='%.2f'
-                         ),
-                         "릴리즈높이": st.column_config.NumberColumn(
-                             format='%.2f'
-                         ),
-                         "VRA": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "VAA": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "스트%": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "존%": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "헛스윙%": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "CSW%": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "초구스트%": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "초구스윙%": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "피안타율": st.column_config.NumberColumn(
-                             format="%.3f"
-                         ),
-                         "피출루율": st.column_config.NumberColumn(
-                             format='%.3f'
-                         ),
-                         "피장타율": st.column_config.NumberColumn(
-                             format='%.3f'
-                         ),
-                         "피OPS": st.column_config.NumberColumn(
-                             format='%.3f'
-                         ),
-                         "wOBA": st.column_config.NumberColumn(
-                             format='%.3f'
-                         ),
-                         "기대피안타율": st.column_config.NumberColumn(
-                             format="%.3f"
-                         ),
-                         "기대피출루율": st.column_config.NumberColumn(
-                             format='%.3f'
-                         ),
-                         "기대피장타율": st.column_config.NumberColumn(
-                             format='%.3f'
-                         ),
-                         "기대피OPS": st.column_config.NumberColumn(
-                             format='%.3f'
-                         ),
-                         "기대wOBA": st.column_config.NumberColumn(
-                             format='%.3f'
-                         ),
-                         "땅볼%": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "뜬공%": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "라이너%": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "팝업%": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "강한타구%": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
-                         "배럴%": st.column_config.NumberColumn(
-                             format='%.1f'
-                         ),
+                        **투수컬럼포맷설정
                      },
                      hide_index=False)

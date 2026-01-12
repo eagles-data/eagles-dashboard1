@@ -162,14 +162,14 @@ with st.spinner('loading data...'):
 최소시즌 = min(시즌들)
 
 with 셀렉터구역1[0]:
-    선택한연도 = st.selectbox(label="연도 선택",
+    선택한연도 = st.selectbox(label="시즌",
                                options=['전체']+시즌들,
                                placeholder='...연도 선택',
                                index=1)
     if 선택한연도 == '전체':
         선택한연도 = None
 
-    선택한레벨 = st.selectbox(label = '레벨 선택',
+    선택한레벨 = st.selectbox(label = '1군/퓨처스',
                               options = ('전체', '1군', '퓨처스'),
                               placeholder = '...레벨 선택',
                               index=0)
@@ -181,7 +181,7 @@ else:
     퓨처스임 = False
 
 with 셀렉터구역1[1]:
-    선택한투수 = st.selectbox(label = "투수 선택",
+    선택한투수 = st.selectbox(label = "투수",
                               options = 투수이름리스트,
                               placeholder = '...투수')
 
@@ -211,10 +211,10 @@ else:
         제일끝날짜 = datetime.date(선택한연도, 12, 31)
 
 with 셀렉터구역1[2]:
-    앞날짜 = st.date_input("시작일 선택",
+    앞날짜 = st.date_input("시작일",
                            제일앞날짜,
                            format="YYYY.MM.DD")
-    뒷날짜 = st.date_input("종료일 선택",
+    뒷날짜 = st.date_input("종료일",
                            제일끝날짜,
                            format="YYYY.MM.DD")
     앞날짜텍스트 = 앞날짜.strftime('%y.%m.%d')
@@ -240,15 +240,15 @@ else:
 with 셀렉터구역1[3]:
     if 선택한투수ID:
         경기들 = 투수게임날짜(레벨=레벨, 연도=선택한연도, 투수ID=선택한투수ID,
-                              시작일=시작날_텍스트, 종료일=끝날_텍스트)
+                         시작일=시작날_텍스트, 종료일=끝날_텍스트)
         경기일옵션 = [x[0] for x in 경기들.values]
         경기일옵션.sort(reverse=True)
         경기일옵션 = ['전체'] + 경기일옵션
 
-        선택한경기날 = st.selectbox(label = '경기일 선택',
-                                    options = 경기일옵션,
-                                    placeholder = '...경기일 선택',
-                                    index=0)
+        선택한경기날 = st.selectbox(label = '경기일',
+                                 options = 경기일옵션,
+                                 placeholder = '...경기일 선택',
+                                 index=0)
     if 선택한경기날 != '전체':
         날짜쿼리 += f" and game_date='{선택한경기날}'"
 
@@ -259,7 +259,7 @@ with 셀렉터구역1[-1]:
     ### 구종 체크박스
     구종옵션 = ['직구', '투심', '슬라', '커터', '스위퍼', '커브', '체인', '포크']
 
-    선택한구종들 = st.pills("구종선택", 구종옵션, default=구종옵션, selection_mode="multi")
+    선택한구종들 = st.pills("구종", 구종옵션, default=구종옵션, selection_mode="multi")
 
     선택구종 = []
     if '직구' in 선택한구종들:

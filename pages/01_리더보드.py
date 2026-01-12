@@ -164,7 +164,7 @@ LEFT JOIN psr
         타자_퓨처스 = 타자성적[타자성적.레벨 == 'KBO Minors']
         투수_1군 = 투수성적[투수성적.레벨 == 'KBO']
         투수_퓨처스 = 투수성적[투수성적.레벨 == 'KBO Minors']
-        
+
     return [타자_1군, 타자_퓨처스, 투수_1군, 투수_퓨처스] 
 
 ####################
@@ -189,12 +189,12 @@ with 셀렉터영역[-1]:
         load_data.clear()
 
 with 셀렉터영역[0]:
-    시즌선택 = st.selectbox(label = "연도 선택",
+    시즌선택 = st.selectbox(label = "시즌",
                             options = 시즌옵션,
                             index=0,
                             placeholder = '...연도 선택')
 with 셀렉터영역[1]:
-    레벨선택 = st.radio("레벨 선택", ["1군", "퓨처스"], index=0, horizontal=True)
+    레벨선택 = st.radio("1군/퓨처스", ["1군", "퓨처스"], index=0, horizontal=True)
 
     현소속or원소속 = st.radio('현소속팀/원소속팀', ['현재', '원소속', '시즌당시소속'], index=2, horizontal=True)
 
@@ -213,7 +213,7 @@ with 셀렉터영역[2]:
     st.button("전체 해제", on_click=unselect_all_pills)
 
 with 셀렉터영역[3]:
-    팀선택 = st.pills("팀선택",
+    팀선택 = st.pills("팀",
                       팀옵션, 
                       default=st.session_state.selected_pills,
                       selection_mode="multi")
@@ -316,7 +316,7 @@ with 타자탭:
                 df = df[df.시즌소속팀.isin(팀선택)]
                 df['팀'] = df['시즌소속팀'].apply(get_base64_emblem)
             
-            display_df = df[['이름', '팀'] + 타자리더보드_표시컬럼]
+            display_df = df[['이름', '팀', '나이'] + 타자리더보드_표시컬럼]
             dynamic_height = min(len(df) * 35 + 38, 800)
             st.dataframe(display_df\
                          .set_index(['이름', '팀'])\
@@ -432,7 +432,7 @@ with 투수탭:
                 df = df[df.시즌소속팀.isin(팀선택)]
                 df['팀'] = df['시즌소속팀'].apply(get_base64_emblem)
             
-            display_df = df[['이름', '팀'] + 투수리더보드_표시컬럼]
+            display_df = df[['이름', '팀', '나이'] + 투수리더보드_표시컬럼]
             dynamic_height = min(len(df) * 35 + 38, 800)
             st.dataframe(display_df\
                          .set_index(['이름', '팀'])\
