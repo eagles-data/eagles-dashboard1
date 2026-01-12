@@ -7,7 +7,6 @@ import base64
 
 def get_base64_emblem(team_name):
     """팀 이름을 기반으로 images/ 폴더의 엠블럼을 Base64 문자열로 반환"""
-    from .codes import 팀코드_KBO
     code = 팀코드_KBO.get(team_name)
     if code and code != 'None':
         file_path = f"images/emblem_{code}.png"
