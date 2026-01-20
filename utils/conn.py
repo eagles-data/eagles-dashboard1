@@ -5,7 +5,6 @@ from sqlalchemy.exc import OperationalError
 from sqlalchemy.engine import Engine
 from sqlalchemy import create_engine, text
 import os
-import streamlit as st
 from pathlib import Path
 from dotenv import load_dotenv
 from .logger_config import setup_logging
@@ -13,7 +12,8 @@ import logging
 
 # .env 파일 로드
 current_dir = Path(__file__).parent
-env_path = current_dir / '.env'
+#env_path = current_dir / '.env'
+env_path = current_dir.parent / '.env'
 load_dotenv(dotenv_path=env_path)
 
 # 로깅 설정
@@ -44,6 +44,21 @@ def get_max_year(engine):
         result = connection.execute(text(query))
         최대연도 = result.cursor.fetchone()[0]
         return 최대연도
+
+
+##################################
+# 현재 DB 기록 내 최대날짜 구하기
+##################################
+def get_max_date(engine):
+    query = """
+    SELECT
+    max(game_date) FROM raw_tracking.tm;
+    """
+    with engine.begin() as connection:
+        result = connection.execute(text(query))
+        최대날짜 = result.cursor.fetchone()[0]
+        return 최대날짜
+
 
 ##################################
 # 현재 DB 트래킹 데이터 내 연도 목록 구하기
@@ -91,6 +106,8 @@ def get_conn(db_name: str = None):
     host = get_setting('DB_HOST')
     port = get_setting('DB_PORT', 3306)
 
+    instance_connection_name = get_setting('INSTANCE_CONNECTION_NAME')
+
     # 디버깅용 (비밀번호는 제외하고 로그 출력)
     if not all([user, pw, host]):
         logger.error("DB 연결 설정이 누락되었습니다. DB_USER, DB_PW, DB_HOST를 확인하세요.")
@@ -98,8 +115,22 @@ def get_conn(db_name: str = None):
         raise ValueError("Database configuration missing.")
 
     # DB URL 빌드
-    db_path = f"/{db_name}" if db_name else ""
-    db_url = f"mysql+pymysql://{user}:{pw}@{host}:{port}{db_path}?charset=utf8mb4"
+    target_db = f"/{db_name}" if db_name else ""
+
+    # CASE A: Cloud Run (Unix Socket 사용)
+    if instance_connection_name:
+        # 소켓 경로: /cloudsql/프로젝트:리전:인스턴스이름
+        socket_path = f"/cloudsql/{instance_connection_name}"
+        db_url = f"mysql+pymysql://{user}:{pw}@localhost{target_db}?unix_socket={socket_path}&charset=utf8mb4"
+        logger.info(f"Cloud Run 환경 감지: Unix Socket으로 접속 시도 ({instance_connection_name})")
+
+    # CASE B: 로컬/VM/Streamlit (TCP/IP 사용)
+    else:
+        if not host:
+            logger.error("로컬 환경에서는 DB_HOST가 필요합니다.")
+            raise ValueError("DB_HOST missing")
+        db_url = f"mysql+pymysql://{user}:{pw}@{host}:{port}{target_db}?charset=utf8mb4"
+        logger.info(f"로컬/TCP 환경 감지: Host({host})로 접속 시도")
 
     try:
         engine = create_engine(
